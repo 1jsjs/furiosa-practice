@@ -1,0 +1,41 @@
+명령어 모음
+conda env list : 가상환경 리스트 뽑기
+
+conda create -n py311 python=3.11 : 가상환경 만들기
+
+activate ~~~ : 가상환경 활성화 시키기
+
+pip list : pip로 깐 것들 리스트
+---
+
+260831
+https://eduhancom.com/furiosa?utm_source=contestkorea&utm_medium=referral&utm_campaign=2026_furiosa_ai_agent&utm_content=contestkorea
+https://www.anaconda.com/download/success?reg=skipped
+https://code.visualstudio.com/thank-you?dv=win64user
+텐서플로 깔기
+주석 최대한 많이 쓰기
+
+
+y = w(가중치) x + b
+
+LLM DL ML AI
+최소의 오차, 최적의 weight 
+
+인풋 레이어
+< 사이 구간 : 히든 레이어 >
+아웃풋 레이어
+
+
+큰 데이터라면
+잘라서 여러번 보낸다
+---
+데이터는 항상 짤라서 한다. 성능이 좋아짐
+batch 값의 디폴트 값
+ㄴ 텐서플로(TensorFlow)에서 model.fit() 등 케라스 학습 함수를 사용할 때 명시하지 않은 배치 크기(batch_size)의 기본값은 32
+ㄴ배치 사이즈 조절은 사용자가 (< 하이퍼파라미터 튜닝)
+
+##성능향상하는법
+1. EPOCH 횟수 조절
+2. 노드의 개수 조절
+3. 레이어의 깊이 조절
+4. 훈련 bathc 사이즈 조절
