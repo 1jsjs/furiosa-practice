@@ -22,3 +22,6 @@ model.fit(x, y, epochs=200)
 #4. 평가X 예측O
 result = model.predict(np.array([4]))
 print("4의 예측값 : ",result)
+
+#26.09.01
+# 4의 예측값 :  [[-1.8245176]]

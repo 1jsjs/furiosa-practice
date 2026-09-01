@@ -11,7 +11,7 @@ y = np.array([1,2,4,3,5])
 model = Sequential()
 
 #딥러닝 모델 구현
-model.add(Dense(3, input_dim = 1)) 
+model.add(Dense(3, input_dim = 1)) #인풋은 알려줘야 함
 
 model.add(Dense(5, input_dim = 3))
 
@@ -33,3 +33,11 @@ loss = model.evaluate(x, y)
 print ("loss : ", loss)
 result = model.predict(np.array([1,2,3,4,5]))
 print ("6의 예측값 : ", result)
+
+
+# 2026.09.01
+# 6의 예측값 :  [[1.1223971]
+#  [2.05571  ]
+#  [2.989023 ]
+#  [3.9223354]
+#  [4.8556495]]

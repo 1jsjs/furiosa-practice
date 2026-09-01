@@ -1,4 +1,5 @@
 # batch 사이즈로 잘라서 작업한다.
+# default batch 사이즈는 기본 32
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense

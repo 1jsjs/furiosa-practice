@@ -9,7 +9,7 @@ y = np.array([1,2,4,3,5])
 
 #2.모델구성
 model = Sequential()
-model.add(Dense(1, input_dim = 1)) #단층 레이어
+model.add(Dense(1, input_dim = 1)) #단층 레이어 y = wx + b 단 하나
 
 #3.컴파일, 훈련
 model.compile(loss='mse', optimizer='adam')
@@ -20,3 +20,10 @@ loss = model.evaluate(x, y)
 print ("loss : ", loss)
 result = model.predict(np.array([1,2,3,4,5]))
 print ("6의 예측값 : ", result)
+
+# 2026.09.01
+# 6의 예측값 :  [[-0.5149182]
+#  [-1.128487 ]
+#  [-1.7420558]
+#  [-2.3556247]
+#  [-2.9691935]]
