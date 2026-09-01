@@ -44,4 +44,17 @@ c,d]   X    z, w]     =   cx+dz, cy+dw]
       [4,5,6]] ,[5,4,3]] -> (2,2,3)
 
 ---
+점심시간
+---
+강사님 이메일 주소 kingkeras@naver.com
+커리 내용 조금은 수정됨
+
+열 = 컬럼 = 피처
+
+컬럼 갯수와 input_dim = ㅁ 에서 ㅁ에 들어가는 수와 같다.
+
+
+tf.transpose(x) # 행과 열을 전치하는 명령어
+https://rfriend.tistory.com/719
+
 
