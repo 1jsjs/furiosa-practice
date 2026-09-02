@@ -26,7 +26,7 @@ model.fit (x_train, y_train, epochs = 1000, batch_size = 5) #데이터보다 배
 
 #4.평가, 예측
 loss = model.evaluate (x_test, y_test) #evaulate를 이 테스트 셋들로 하겠다. 훈련과 관련이 없는 데이터들
-print ('loss :', loss)
+print ('loss :', loss) #loss : 0.2941036820411682
 
 
 
