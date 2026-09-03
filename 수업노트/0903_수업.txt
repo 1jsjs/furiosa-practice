@@ -26,3 +26,7 @@ AI 모델링이 2개 있다.
 기준은 **loss**
 
 RMSE R2 
+
+## 대회
+https://aifactory.space/ko
+https://dacon.io/
