@@ -8,43 +8,59 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error
 
 #1.데이터
-path = "./_data/ddarung/"
+path = "./_data/ddarung/" #상대경로
+# path = "c:\study\_data\ddarung/" # 절대경로
+# path = "c:\\study\\_data\\ddarung/" 
+# path = "c:/study/_data/ddarung/"
+# path = "c://study//_data//ddarung/"
 
+#인덱스는 데이터가 아니다
 train_csv = pd.read_csv(path + 'train.csv', index_col=0)
 test_csv = pd.read_csv(path + 'test.csv', index_col=0)
 submission = pd.read_csv(path + 'submission.csv', index_col=0)
 
+# print(train_csv.shape) #(1459, 10) 
+# print(test_csv.shape) #(715, 9)
+# print(submission.shape) #(715, 1)
+
+# #train.csv 만으로 훈련 / test.csv와 submission.csv는 제출용
+# # 훈련을 위해 train.csv 를 x와 y로 분리해야 함.
+# 훈련 방식은 x는 y야 반복 훈련
 
 train_csv = train_csv.dropna() 
 
+# print (train_csv.columns)
+# # Index(['hour', 'hour_bef_temperature', 'hour_bef_precipitation',
+# #        'hour_bef_windspeed', 'hour_bef_humidity', 'hour_bef_visibility',
+# #        'hour_bef_ozone', 'hour_bef_pm10', 'hour_bef_pm2.5', 'count'],
+# #       dtype='str')
+
 # **train_csv를 x와 y로 분리**
-x = train_csv.drop(['count'], axis=1) 
+x = train_csv.drop(['count'], axis=1) #count라는 칼럼을 탈락시킴 //  axis=0 행(row) | axis=1 열(column) 그러므로 이 문장은 열 삭제
 y = train_csv['count']
 
-# train 데이터를 학습용과 평가용으로 분리
-x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8, random_state=42)
+# train 데이터를 학습용과 평가용으로 다시 한번 분리
+x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.75, random_state=42)
 
 
 #2.모델구성
 model = Sequential()
-model.add(Dense(10, input_dim=9))
-model.add(Dense(10))
-model.add(Dense(10))
-model.add(Dense(10))
-model.add(Dense(10))
+model.add(Dense(16, input_dim=9))
+model.add(Dense(64))
+model.add(Dense(128))
+model.add(Dense(256))
+model.add(Dense(128))
 model.add(Dense(1))
 
 
 #3.컴파일, 훈련
 model.compile (loss = 'mse', optimizer = 'adam')
-model.fit (x_train, y_train, epochs = 10, batch_size = 10)
+model.fit (x_train, y_train, epochs = 500, batch_size = 3)
 
 
 #4.평가, 예측
 print("========================================")
 y_predict = model.predict(x_test)
-
-from sklearn.metrics import r2_score,mean_squared_error
 
 r2 = r2_score(y_test, y_predict)
 print ("r2 : ", r2)
