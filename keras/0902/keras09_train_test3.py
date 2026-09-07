@@ -15,7 +15,7 @@ y = np.array([1,2,3,4,5,6,7,8,9,10])
 
 #순서 지키기
 x_train, x_test, y_train, y_test = train_test_split(x, y,
-                                                    train_size=0.7, #train_size 나 test_size 두 개 중 아무거나 써도 된다.
+                                                    train_size=0.7, #t거rain_size 나 test_size 두 개 중 아무나 써도 된다.
                                                                     #둘 다 써도 됨 둘의 사이즈를 1로 안 맞춰도 됨
                                                                     #size를 1을 넘으면 안 된다. 
                                                                     #test_size: 테스트 셋 구성의 비율을 나타냅니다. 
