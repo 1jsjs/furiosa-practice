@@ -34,7 +34,7 @@ es = EarlyStopping (
     monitor= 'val_loss', #기준을 선언
     mode= 'min', #어떤 값을 찾을까? 긴가민가 하면 auto 하면 됨
     patience= 20, #몇 번을 찾을 건인지
-    restore_best_weights=True, #어떤 가중치 값을 반환할건지 default는 False *현재 값
+    restore_best_weights=True, #어떤 가중치 값을 반환할건지 default는 False *현재 값 / True는 최솟값
 )
 
 model.compile(loss = 'mse', optimizer = 'adam')

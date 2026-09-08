@@ -1,6 +1,17 @@
 #https://www.kaggle.com/competitions/bike-sharing-demand/data
 # keras14_kaggle_bike1.py copy
+"""
+0908
+train_size=0.9, random_state=42
+16 64 64 32 8 1
+EarlyStopping : val_loss min 50 True
+epochs = 10000000
+batch 10 validation_split 0.3
 
+r2 :  0.3176102638244629
+MSE:  22586.755859375
+RMSE:  150.28890797186264
+"""
 import numpy as np
 import pandas as pd
 from tensorflow.keras.models import Sequential
@@ -61,8 +72,16 @@ model.add(Dense(8, activation='relu'))
 model.add(Dense(1, activation='relu'))
 
 #3.컴파일, 훈련
+from tensorflow.keras.callbacks import EarlyStopping
+
+es = EarlyStopping(
+    monitor='val_loss',
+    mode='min',
+    patience=50,
+    restore_best_weights=True
+)
 model.compile (loss = 'mse', optimizer = 'adam')
-hist = model.fit (x_train, y_train, epochs = 100, batch_size = 50, validation_split = 0.3)
+hist = model.fit (x_train, y_train, epochs = 10000000, batch_size = 50, validation_split = 0.3, callbacks=[es])
 
 #4.평가, 예측
 print("========================================")
@@ -83,7 +102,7 @@ print ("RMSE: ", rmse)
 y_submit = model.predict (test_csv)
 submission_csv['count'] = y_submit
 
-submission_csv.to_csv(path + 'submit/' + 'ES_val_submit_0904_1732.csv')
+submission_csv.to_csv(path + 'submit/' + 'val_submit_0904_1732.csv')
 
 """
 5차 시도
