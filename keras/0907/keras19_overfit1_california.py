@@ -6,6 +6,7 @@ from sklearn.datasets import fetch_california_housing
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score, mean_squared_error
 import numpy as np
 import time
 
@@ -33,9 +34,25 @@ hist = model.fit (x_train, y_train, epochs = 100, batch_size = 32, validation_sp
 end_time = time.time()
 
 #4.평가, 예측 (evaluate 는 test로 / predict 까지는 보류 / 판단은 evaluate의 loss 값)
+
+y_predict = model.predict (x_test)
+mse = mean_squared_error(y_test, y_predict)
+print ("MSE: ", mse)
+
+r2 = r2_score(y_test, y_predict)
+print ("r2 : ", r2)
+
 loss = model.evaluate (x_test, y_test)
 print ('loss :', loss) #loss : 0.6562087535858154
 print ("걸린 시간:", round(end_time-start_time, 2))
+"""
+MSE:  0.6647797461647238
+r2 :  0.4934358631956909
+loss : 0.6647798418998718
+"""
+
+
+
 
 print ("==============================================hist=====================================================")
 print (hist) #지금 hist는 랩핑되어 있는 상태
@@ -65,3 +82,4 @@ plt.title ('캘리포니아 LOSS')
 plt.ylabel('loss')
 plt.grid() #grid(격자표시) 추가
 plt.show()
+
