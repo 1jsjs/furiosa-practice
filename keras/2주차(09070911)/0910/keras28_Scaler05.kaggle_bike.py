@@ -7,7 +7,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from sklearn.metrics import r2_score, mean_squared_error
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
 
 #1.데이터
 path = "./_data/kaggle_bike-sharing-demand/" #상대경로 맨 마지막에 / 빼지말기
@@ -52,7 +52,10 @@ casual 과 registered 칼럼들은 test는 없어서 그냥 뺌
 #train 데이터를 학습용과 평가용으로 다시 한번 분리
 x_train, x_val, y_train, y_val = train_test_split (x, y, train_size=0.9, random_state=42)
 
-scaler = MinMaxScaler()
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+scaler = RobustScaler()
+
 scaler.fit(x_train)
 x_train = scaler.transform (x_train)
 x_val = scaler.transform (x_val)
@@ -89,7 +92,7 @@ print ("RMSE: ", rmse)
 y_submit = model.predict (test_csv)
 submission_csv['count'] = y_submit
 
-submission_csv.to_csv(path + 'submit/' + 'scaler_ES_val_submit_0910_1702.csv')
+submission_csv.to_csv(path + 'submit/' + 'RobustScaler_ES_val_submit_0911_1649.csv')
 
 """
 5차 시도
@@ -112,6 +115,27 @@ RMSE:  159.32323301428767
 r2 :  -1.0889439582824707
 MSE:  69142.9921875
 RMSE:  262.95055084083776
+"""
+
+# 26.09.11 기준 standard scaler 적용
+"""
+r2 :  0.3290058970451355
+MSE:  22209.56640625
+RMSE:  149.02874355724134
+"""
+
+"""
+# 26.09.11 기준 MaxAbsScaler 적용
+r2 :  0.33581870794296265
+MSE:  21984.06640625
+RMSE:  148.2702478795055
+"""
+
+"""
+# 26.09.11 기준 RobustScaler 적용
+r2 :  0.33581870794296265
+MSE:  21984.06640625
+RMSE:  148.2702478795055
 """
 
 

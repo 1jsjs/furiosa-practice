@@ -3,7 +3,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.datasets import boston_housing
 from tensorflow.keras.callbacks import EarlyStopping
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 
 
 import numpy as np
@@ -16,7 +16,11 @@ import time
 print (x_train.shape, x_test.shape) #(404, 13) (102, 13)
 print (y_train.shape, y_test.shape) #(404,) (102,)
 
-scaler = MinMaxScaler()
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
+
 scaler.fit(x_train)
 x_train = scaler.transform (x_train)
 x_test = scaler.transform (x_test)
@@ -87,6 +91,32 @@ r2 : 0.8015839778993096
 mse :  <function mean_squared_error at 0x000002E4E93FBF60>
 RMSE :  4.064100550878531
 걸린 시간: 7.94
+"""
+
+# 26.09.11 기준 standard scaler 적용
+"""
+loss(mse) :  13.94719123840332
+r2 : 0.8324537788271986
+mse :  <function mean_squared_error at 0x0000020DC17FBEC0>
+RMSE :  3.7345939880224734
+걸린 시간: 8.51
+"""
+
+"""
+# 26.09.11 기준 MaxAbsScaler 적용
+loss(mse) :  20.907684326171875
+r2 : 0.7488380869494919
+mse :  <function mean_squared_error at 0x0000021C56283F60>
+RMSE :  4.572492126173613
+걸린 시간: 5.77
+"""
+"""
+# 26.09.11 기준 RobustScaler 적용
+loss(mse) :  21.33925437927246
+r2 : 0.7436536576669508
+mse :  <function mean_squared_error at 0x0000027717293EC0>
+RMSE :  4.619443266214789
+걸린 시간: 7.02
 """
 
 # import matplotlib.pyplot as plt

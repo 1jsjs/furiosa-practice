@@ -1,13 +1,16 @@
 # https://dacon.io/competitions/open/235576
 # keras13_ddarung02_submission.py copy
 
+
+
+
 import numpy as np
 import pandas as pd
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 
 #1.데이터
 path = "./_data/ddarung/" #상대경로
@@ -44,7 +47,12 @@ y = train_csv['count']
 # train 데이터를 학습용과 평가용으로 다시 한번 분리
 x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8, random_state=12345)
 
-scaler = MinMaxScaler()
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
+
+
 scaler.fit (x_train) #x값은 모두 민맥스 스케일러 할 준비를 해라
 x_train = scaler.transform (x_train) #변환시키기
 x_test = scaler.transform (x_test) #변환시키기
@@ -105,7 +113,7 @@ y_submit = model.predict (test_csv)
 submission['count'] = y_submit
 # print (submission)
 # print (submission.shape) #(715, 1)
-submission.to_csv(path + 'submit/' + "scaler_visualize_val_submit_0907_1618.csv")
+submission.to_csv(path + 'submit/' + "RobustScaler_submit_0911_1644.csv")
 
 
 

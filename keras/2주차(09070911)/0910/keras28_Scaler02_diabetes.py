@@ -6,7 +6,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 import numpy as np
 import time
 
@@ -19,9 +19,14 @@ print (x.shape, y.shape) #(442, 10) (442,)
 
 x_train, x_test, y_train, y_test = train_test_split (x, y, train_size=0.80, random_state=333)
 
-scaler = MinMaxScaler()
-scaler.fit(x_train)
-x_train = scaler.transform (x_train)
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
+
+# scaler.fit(x_train)
+# x_train = scaler.transform (x_train)
+x_train = scaler.fit_transform(x_train)
 x_test = scaler.transform (x_test)
 
 #2.모델구성 (input_dim = 10, 행무시 열우선)
@@ -75,6 +80,29 @@ print ("걸린 시간:", round(end_time-start_time, 2))
 r2 : 0.42872237043373007
 loss : 3028.859619140625
 걸린 시간: 7.23
+"""
+
+"""
+# 26.09.11 기준 standard scaler 적용
+r2 : 0.3609701747001729
+loss : 3388.0751953125
+걸린 시간: 10.19
+"""
+
+"""
+# 26.09.11 기준 MaxAbsScaler 적용
+loss :  4133.71923828125
+r2 : 0.22033324088500428 
+loss : 4133.71923828125
+걸린 시간: 13.07
+"""
+
+"""
+# 26.09.11 기준 RobustScaler 적용
+loss :  3312.933349609375
+r2 : 0.37514282411740596
+loss : 3312.933349609375
+걸린 시간: 8.08
 """
 
 # import matplotlib.pyplot as plt

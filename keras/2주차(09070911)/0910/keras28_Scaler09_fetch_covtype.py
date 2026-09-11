@@ -1,6 +1,21 @@
 #acc 0.93 만들기
 # acc_score :  0.9466192783318848
 # 9월 10일  minmax scaler 적용함 -> acc_score :  0.9590199908780324 걸린 시간 :  1332.49 s
+"""
+9월 11일 standard scaler 적용
+loss : 0.11374743282794952
+acc : 0.96
+acc_score :  0.9606206380213936
+걸린 시간 :  1628.23 s
+"""
+
+"""
+# 26.09.11 기준 MaxAbsScaler 적용
+loss : 0.11903402209281921
+acc : 0.96
+acc_score :  0.9562145555622488
+걸린 시간 :  1211.6 s
+"""
 
 import time
 import numpy as np
@@ -14,7 +29,7 @@ from tensorflow.keras.utils import to_categorical
 from sklearn.datasets import fetch_covtype
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
 
 #1. 데이터
 datasets = fetch_covtype()
@@ -39,7 +54,9 @@ x_train, x_test, y_train, y_test = train_test_split (x, y,
                                                      stratify=y)
 # print (x.shape, y.shape) #(581012, 54) (581012, 7)
 
-scaler = MinMaxScaler()
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+scaler = MaxAbsScaler()
 scaler.fit (x_train) #x값은 모두 민맥스 스케일러 할 준비를 해라
 x_train = scaler.transform (x_train) #변환시키기
 x_test = scaler.transform (x_test) #변환시키기

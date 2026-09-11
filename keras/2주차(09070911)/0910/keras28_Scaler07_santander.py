@@ -7,7 +7,7 @@ from tensorflow.keras.callbacks import EarlyStopping
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
 
 #원핫 때려주고 np유니 확인 한번 해주시고 모델에서는 마지막 softmax 평가예측할땐 categorical~ 마지막np.round > np.argmax
 
@@ -44,7 +44,9 @@ x_train, x_test, y_train, y_test = train_test_split (x, y,
                                                      random_state=333,
                                                      stratify=y)
 
-scaler = MinMaxScaler()
+# scaler = MinMaxScaler()
+scaler = StandardScaler()
+scaler = MaxAbsScaler()
 scaler.fit(x_train)
 x_train = scaler.transform (x_train)
 x_test = scaler.transform (x_test)
@@ -122,10 +124,10 @@ y_submit = model.predict (test_csv)
 y_submit = np.argmax (y_submit, axis=1)
 
 submission_csv['target'] = y_submit
-submission_csv.to_csv(path + 'submit/' + 'scaler_submit_0910_1713.csv')
+submission_csv.to_csv(path + 'submit/' + 'MaxAbsScaler_submit_0910_1713.csv')
 
 
 # 26.09.10 기준 minmax scaler 적용
 """
-
+왜 자꾸 0.5가 나오지? csv에 값도 이상함
 """

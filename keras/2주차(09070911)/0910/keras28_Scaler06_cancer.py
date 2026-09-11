@@ -7,7 +7,7 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import load_breast_cancer #유방암관련 데이터셋 불러오기
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
 
 """
 AI 는 두 종류가 있다.
@@ -61,7 +61,9 @@ x_train, x_test, y_train, y_test = train_test_split (x, y,
 # print (x_train.shape, x_test.shape) # (398, 30) (171, 30)
 # print (y_train.shape, y_test.shape) # (398,) (171,)
 
-scaler = MinMaxScaler()
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+scaler = MaxAbsScaler()
 scaler.fit(x_train)
 x_train = scaler.transform (x_train)
 x_test = scaler.transform (x_test)
@@ -124,4 +126,22 @@ loss : 0.10378947108983994
 acc :  0.9649
 걸린 시간: 6.63
 acc_score : 0.9649122807017544
+"""
+
+
+
+# 26.09.11 기준 standard scaler 적용
+"""
+loss : 0.13029098510742188
+acc :  0.9708
+걸린 시간: 4.41
+acc_score : 0.9707602339181286
+"""
+
+"""
+# 26.09.11 기준 MaxAbsScaler 적용
+loss : 0.0798686146736145
+acc :  0.9825
+걸린 시간: 7.03
+acc_score : 0.9824561403508771
 """
