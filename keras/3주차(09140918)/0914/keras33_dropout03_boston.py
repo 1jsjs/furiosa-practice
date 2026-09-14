@@ -1,6 +1,6 @@
 #keras28_Scaler03_boston.py copy
 from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.datasets import boston_housing
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
@@ -9,7 +9,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, Ro
 import numpy as np
 import time
 
-path = "./_save/keras33_boston/"
+# path = "./_save/keras33_boston/"
 
 
 #1.데이터
@@ -33,11 +33,17 @@ x_test = scaler.transform (x_test)
 model = Sequential()
 model.add(Dense(100, input_dim = 13))
 model.add(Dense(256, activation='relu'))
+model.add (Dropout(0.2)) #이렇게 쓴다면 윗 줄에 적용되는거임
 model.add(Dense(100, activation='relu'))
+model.add (Dropout(0.2)) #이렇게 쓴다면 윗 줄에 적용되는거임
 model.add(Dense(500, activation='relu'))
+model.add (Dropout(0.2)) #이렇게 쓴다면 윗 줄에 적용되는거임
 model.add(Dense(256, activation='relu'))
+model.add (Dropout(0.2)) #이렇게 쓴다면 윗 줄에 적용되는거임
 model.add(Dense(150, activation='relu'))
+model.add (Dropout(0.2)) #이렇게 쓴다면 윗 줄에 적용되는거임
 model.add(Dense(150, activation='relu'))
+model.add (Dropout(0.2)) #이렇게 쓴다면 윗 줄에 적용되는거임
 model.add(Dense(50, activation='relu'))
 model.add(Dense(1))
 
@@ -50,24 +56,24 @@ es = EarlyStopping (
     restore_best_weights=True
 )
 
-import datetime
-date = datetime.datetime.now()
-date = date.strftime("%m%d_%H%M")
+# import datetime
+# date = datetime.datetime.now()
+# date = date.strftime("%m%d_%H%M")
 
-path = "./_save/keras33_boston/"
-filename = '{epoch:04d}-{val_loss:4f}.keras' #history에서 때오는 것임
-filepath = "".join([path, "k33_", date, filename])
-mcp = ModelCheckpoint ( 
-    monitor='val_loss',
-    mode='auto',
-    save_best_only = True,
-    filepath =filepath,
-    verbose=1,
-)
+# path = "./_save/keras33_boston/"
+# filename = '{epoch:04d}-{val_loss:4f}.keras' #history에서 때오는 것임
+# filepath = "".join([path, "k33_", date, filename])
+# mcp = ModelCheckpoint ( 
+#     monitor='val_loss',
+#     mode='auto',
+#     save_best_only = True,
+#     filepath =filepath,
+#     verbose=1,
+# )
 start_time = time.time()
 model.fit (x_train, y_train, epochs = 1000, batch_size =10, 
            validation_split = 0.2,
-           callbacks = [es,mcp])
+           callbacks = [es])
 end_time = time.time()
 
 print ("=================================================")
@@ -100,10 +106,19 @@ print ("걸린 시간:", round(end_time-start_time, 2))
 
 
 """
-9.12
+9.14
 loss(mse) :  16.88728904724121
 r2 : 0.7971346927338385
 mse :  <function mean_squared_error at 0x0000018EA6C980E0>
 RMSE :  4.10941466732028
 걸린 시간: 11.17
+
+
+
+loss(mse) :  19.208751678466797
+r2 : 0.7692471900655737
+mse :  <function mean_squared_error at 0x000001A3EBF47740>
+RMSE :  4.382779022001862
+걸린 시간: 8.58
+
 """
