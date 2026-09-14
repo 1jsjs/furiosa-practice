@@ -1,7 +1,9 @@
-#  keras28_Scaler01_california.py copy
+# keras30_ModelCheckPoint2_load.py copy
 
-from tensorflow.keras.models import Sequential
+
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import fetch_california_housing
@@ -11,14 +13,14 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, Ro
 import numpy as np
 import time
 
+path = "./_save/keras30/"
+
 #1.데이터
 datasets = fetch_california_housing ()
 x = datasets.data
-
 y = datasets.target
-# datasets 을 x와 y로 분리
-print (x.shape, y.shape) #(20640, 8) (20640,)
 
+# datasets 을 x와 y로 분리
 x_train, x_test, y_train, y_test = train_test_split (x, y, train_size=0.7,
                                                     #  shuffle=True, 
                                                      random_state=42)
@@ -48,16 +50,45 @@ model.add(Dense(150, activation='relu'))
 model.add(Dense(150, activation='relu'))
 model.add(Dense(1))
 
-model.summary()
-
-path = "./_save/keras29"
-model.save(path + 'keras29_1_save_mode.keras') # 0 epoch 일때 초기 가중치도 같이 저장함
-
 #3.컴파일, 훈련 (loss mse, op adam /훈련은 x와y train으로 / 배치 모르면 당분간은 디폴트로 )
 model.compile(loss = 'mse', optimizer = 'adam')
+es = EarlyStopping (
+    monitor= 'val_loss', #기준을 선언
+    mode= 'min', #어떤 값을 찾을까? 긴가민가 하면 auto 하면 됨
+    patience= 30, #몇 번을 찾을 건인지
+    restore_best_weights=True, #어떤 가중치 값을 반환할건지 default는 False *현재 값 / True는 최솟값
+    verbose = 1, 
+)
+
+# 몇 에포에 어떤 loss값인지 다 나타나면 좋겠다는 생각 그러면 작업할 때 편하니까 > 30-3 에서 어떻게 하는지 알려줌
+
+################################### mcp 세이브 파일 만들기 끝 ###################################
+import datetime
+date = datetime.datetime.now()
+date = date.strftime("%m%d_%H%M")
+
+path = "./_save/keras30/"
+filename = '{epoch:04d}-{val_loss:4f}.keras' #history에서 때오는 것임
+filepath = "".join([path, "k30_", date, filename])
+# 파일명 예
+# "./_save/keras30/" + "k30_", 0914_1147, 에포수-val_loss의 소수 4번째자리까지.keras
+mcp = ModelCheckpoint ( 
+    monitor='val_loss',
+    mode='auto',
+    save_best_only = True,
+    filepath =filepath,
+    verbose=1,
+)
+
 start_time = time.time()
-hist = model.fit (x_train, y_train, epochs = 1000, batch_size = 32, validation_split = 0.2)
+hist = model.fit (x_train, y_train,
+                  epochs = 1000, batch_size = 32,
+                  validation_split = 0.2,
+                  callbacks = [es, mcp],
+                  verbose=1
+                  )
 end_time = time.time()
+
 
 #4.평가, 예측 (evaluate 는 test로 / predict 까지는 보류 / 판단은 evaluate의 loss 값)
 y_predict = model.predict (x_test)
@@ -70,3 +101,10 @@ print ("r2 : ", r2)
 loss = model.evaluate (x_test, y_test)
 print ('loss :', loss) #loss : 0.6562087535858154
 print ("걸린 시간:", round(end_time-start_time, 2))
+
+"""
+MSE:  0.2693821316453831
+r2 :  0.7947300173106727
+loss : 0.269382119178772
+걸린 시간: 53.08
+"""

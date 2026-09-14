@@ -38,3 +38,4 @@ tensorboard_logs/
 *.ckpt.*
 *.h5
 *.keras
+*.pdf
