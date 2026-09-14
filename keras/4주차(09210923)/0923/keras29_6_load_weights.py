@@ -1,12 +1,14 @@
-#  keras28_Scaler01_california.py copy
+#  keras29_3_save_mode2.py copy
 
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense
+from tensorflow.keras.callbacks import EarlyStopping
 
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import fetch_california_housing
 from sklearn.metrics import r2_score, mean_squared_error
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
+
 
 import numpy as np
 import time
@@ -48,16 +50,28 @@ model.add(Dense(150, activation='relu'))
 model.add(Dense(150, activation='relu'))
 model.add(Dense(1))
 
-model.summary()
-
-path = "./_save/keras29"
-model.save(path + 'keras29_1_save_mode.keras') # 0 epoch 일때 초기 가중치도 같이 저장함
+# model.summary()
+path = "./_save/keras29/"
+# model.save(path + 'keras29_1_save_mode.keras')
+model.save_weights(path + 'keras29_5_save_weights2.weights.h5')
+# model = load_model (path + 'keras29_1_save_mode.keras')
+# model.summary()
 
 #3.컴파일, 훈련 (loss mse, op adam /훈련은 x와y train으로 / 배치 모르면 당분간은 디폴트로 )
 model.compile(loss = 'mse', optimizer = 'adam')
+es = EarlyStopping (
+    monitor= 'val_loss', #기준을 선언
+    mode= 'min', #어떤 값을 찾을까? 긴가민가 하면 auto 하면 됨
+    patience= 20, #몇 번을 찾을 건인지
+    restore_best_weights=True, #어떤 가중치 값을 반환할건지 default는 False *현재 값 / True는 최솟값
+)
 start_time = time.time()
-hist = model.fit (x_train, y_train, epochs = 1000, batch_size = 32, validation_split = 0.2)
+hist = model.fit (x_train, y_train, epochs = 1000, batch_size = 32, validation_split = 0.2, callbacks = [es])
 end_time = time.time()
+
+# model.save(path + 'keras29_3_save_mode.keras')
+model.save_weights(path + 'keras29_5_save_weights1.weights.h5')
+
 
 #4.평가, 예측 (evaluate 는 test로 / predict 까지는 보류 / 판단은 evaluate의 loss 값)
 y_predict = model.predict (x_test)
