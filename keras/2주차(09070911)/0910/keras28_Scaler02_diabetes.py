@@ -1,6 +1,5 @@
 # keras12_R2_RMSE_03_diabetes.py copy
 
-
 from sklearn.datasets import fetch_california_housing, load_diabetes
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
