@@ -13,7 +13,7 @@ from sklearn.metrics import r2_score, mean_squared_error
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 from tensorflow.keras.callbacks import ModelCheckpoint
 
-path = "./_save/keras35/"
+path = "./_save/keras31/"
 
 
 #1.데이터
@@ -79,7 +79,7 @@ print (test_csv.shape) #(715, 9)
 #exit()
 
 #2.모델구성
-model = load_model(path +"k35_0914_14090093-2885.603760.keras")
+model = load_model(path +"k31_0914_14090093-2885.603760.keras")
 
 #3.컴파일, 훈련
 

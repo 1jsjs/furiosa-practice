@@ -11,7 +11,7 @@ from tensorflow.keras.callbacks import  ModelCheckpoint
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
 
 #1.데이터
-savepath = "./_save/keras37/"
+savepath = "./_save/keras31/"
 path = "./_data/kaggle_bike-sharing-demand/" #상대경로 맨 마지막에 / 빼지말기
 
 #1-1.인덱스는 데이터가 아니다.
@@ -63,7 +63,7 @@ x_train = scaler.transform (x_train)
 x_val = scaler.transform (x_val)
 
 #2.모델구성
-model = load_model(savepath + "k37_0914_14200093-22242.812500.keras")
+model = load_model(savepath + "k31_0914_14200093-22242.812500.keras")
 
 #3.컴파일, 훈련
 

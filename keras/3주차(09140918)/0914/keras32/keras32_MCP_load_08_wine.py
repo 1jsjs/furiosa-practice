@@ -22,7 +22,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
 
-path = "./_save/keras43/"
+path = "./_save/keras31/"
 
 #1. 데이터
 datesets = load_wine()
@@ -59,7 +59,7 @@ print (np.min(x_test), np.max(x_test)) #-0.05077262693156731 1.2428256070640176
 
 
 #2. 모델 구성
-model = load_model (path + "k43_0914_14370049-0.160277.keras")
+model = load_model (path + "k31_0914_14370049-0.160277.keras")
 
 #3. 컴파일, 훈련
 

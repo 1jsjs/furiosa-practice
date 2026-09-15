@@ -31,7 +31,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
 
-path = "./_save/keras45/"
+path = "./_save/keras31/"
 
 #1. 데이터
 datasets = fetch_covtype()
@@ -68,7 +68,7 @@ print (np.min(x_train), np.max(x_train)) #0.0 1.0
 print (np.min(x_test), np.max(x_test)) #0.0 1.0050359712230217
 
 #2. 모델 구성
-model = load_model (path + "keras45k45_0914_14410093-0.114176.keras")
+model = load_model (path + "k31_0914_14410093-0.114176.keras")
 
 #3. 컴파일, 훈련
 

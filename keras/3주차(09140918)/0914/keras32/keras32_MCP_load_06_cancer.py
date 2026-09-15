@@ -22,7 +22,7 @@ _ 분류   |
 
 """
 
-path = "./_save/keras39/"
+path = "./_save/keras31/"
 
 #1.데이터
 #print(datasets.DESCR) #describe 약자 / 실무에선 쓸 수 읎다.
@@ -74,7 +74,7 @@ x_test = scaler.transform (x_test)
 
 
 #2.모델구성
-model = load_model(path + "k39_0914_14260083-0.020171.keras")
+model = load_model(path + "k31_0914_14260083-0.020171.keras")
 #3.컴파일, 훈련
 
 #4.평가, 예측

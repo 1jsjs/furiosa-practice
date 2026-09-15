@@ -12,7 +12,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
 #원핫 때려주고 np유니 확인 한번 해주시고 모델에서는 마지막 softmax 평가예측할땐 categorical~ 마지막np.round > np.argmax
 
 
-savepath = "./_save/keras41/"
+savepath = "./_save/keras31/"
 
 #1. 데이터
 path = "./_data/kaggle_santander/"
@@ -55,7 +55,7 @@ x_train = scaler.transform (x_train)
 x_test = scaler.transform (x_test)
 
 #2. 모델 구성
-model = load_model(savepath + "keras41k41_0914_14310006-0.238372.keras")
+model = load_model(savepath + "keras31_0914_14310006-0.238372.keras")
 
 # print (x_train.shape, x_test.shape) #(160000, 200) (40000, 200)
 # print (y_train.shape, y_test.shape) #(160000, 2) (40000, 2)

@@ -13,7 +13,7 @@ from sklearn.metrics import r2_score, mean_squared_error
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 from tensorflow.keras.callbacks import ModelCheckpoint
 
-path = "./_save/keras35/"
+path = "./_save/keras31/"
 
 
 #1.데이터
@@ -95,9 +95,9 @@ import datetime
 date = datetime.datetime.now()
 date = date.strftime("%m%d_%H%M")
 
-path = "./_save/keras35/"
+path = "./_save/keras31/"
 filename = '{epoch:04d}-{val_loss:4f}.keras' #history에서 때오는 것임
-filepath = "".join([path, "k35_", date, filename])
+filepath = "".join([path, "k31_", date, filename])
 # 파일명 예
 # "./_save/keras30/" + "k30_", 0914_1147, 에포수-val_loss의 소수 4번째자리까지.keras
 mcp = ModelCheckpoint ( 

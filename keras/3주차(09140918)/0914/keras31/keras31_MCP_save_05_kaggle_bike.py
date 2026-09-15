@@ -11,7 +11,7 @@ from tensorflow.keras.callbacks import  ModelCheckpoint
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
 
 #1.데이터
-savepath = "./_save/keras37/"
+savepath = "./_save/keras31/"
 path = "./_data/kaggle_bike-sharing-demand/" #상대경로 맨 마지막에 / 빼지말기
 
 #1-1.인덱스는 데이터가 아니다.
@@ -79,7 +79,7 @@ date = datetime.datetime.now()
 date = date.strftime("%m%d_%H%M")
 
 filename = '{epoch:04d}-{val_loss:4f}.keras' #history에서 때오는 것임
-filepath = "".join([savepath, "k37_", date, filename])
+filepath = "".join([savepath, "k31_", date, filename])
 # 파일명 예
 # "./_save/keras30/" + "k30_", 0914_1147, 에포수-val_loss의 소수 4번째자리까지.keras
 mcp = ModelCheckpoint ( 

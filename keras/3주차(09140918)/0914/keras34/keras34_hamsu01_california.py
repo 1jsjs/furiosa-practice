@@ -1,6 +1,6 @@
 # 30-1 copy
 
-from tensorflow.keras.models import Sequential, load_model
+from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.layers import Dense, Dropout, Input
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
@@ -39,28 +39,24 @@ print (np.min(x_test), np.max(x_test)) #-0.0010638297872338498 1.333173652694611
 # exit()
 
 #2.모델구성 (input_dim = 8 / 행무시 열우선)
-# model = Sequential()
-# model.add (Dense(10, input_dim = 8))
-# model.add (Dropout(0.2)) #이렇게 쓴다면 윗 줄에 적용되는거임
-# model.add(Dense(256, activation='relu'))
-# model.add (Dropout(0.2)) #이렇게 쓴다면 윗 줄에 적용되는거임
-# model.add(Dense(100, activation='relu'))
-# model.add (Dropout(0.2)) #이렇게 쓴다면 윗 줄에 적용되는거임
-# model.add(Dense(500, activation='relu'))
-# model.add (Dropout(0.2)) #이렇게 쓴다면 윗 줄에 적용되는거임
-# model.add(Dense(256, activation='relu'))
-# model.add (Dropout(0.2)) #이렇게 쓴다면 윗 줄에 적용되는거임
-# model.add(Dense(150, activation='relu'))
-# model.add (Dropout(0.2)) #이렇게 쓴다면 윗 줄에 적용되는거임
-# model.add(Dense(150, activation='relu'))
-# model.add(Dense(1))
-########################################################################################
+#2. 함수형 모델 구성
 input1 = Input(shape=(8,))
-dense1 = Dense(10, name='ys1')(input1)
-drop1 = Dropout(0.2)(dense1)
-
-
-
+dense1 = Dense(10)(input1)
+dropout2 = Dropout(0.2)(dense1)
+dense3 = Dense(256, activation='relu')(dropout2)
+dropout4 = Dropout(0.2)(dense3)
+dense5 = Dense(100, activation='relu')(dropout4)
+dropout6 = Dropout(0.2)(dense5)
+dense7 = Dense(500, activation='relu')(dropout6)
+dropout8 = Dropout(0.2)(dense7)
+dense9 = Dense(256, activation='relu')(dropout8)
+dropout10 = Dropout(0.2)(dense9)
+dense11 = Dense(150, activation='relu')(dropout10)
+dropout12 = Dropout(0.2)(dense11)
+dense13 = Dense(150, activation='relu')(dropout12)
+output1 = Dense(1)(dense13)
+model = Model(inputs=input1, outputs=output1)
+model.summary()
 #3.컴파일, 훈련 (loss mse, op adam /훈련은 x와y train으로 / 배치 모르면 당분간은 디폴트로 )
 model.compile(loss = 'mse', optimizer = 'adam')
 es = EarlyStopping (

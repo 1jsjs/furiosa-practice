@@ -22,7 +22,7 @@ _ 분류   |
 
 """
 
-path = "./_save/keras39/"
+path = "./_save/keras31/"
 
 #1.데이터
 #print(datasets.DESCR) #describe 약자 / 실무에선 쓸 수 읎다.
@@ -103,7 +103,7 @@ date = datetime.datetime.now()
 date = date.strftime("%m%d_%H%M")
 
 filename = '{epoch:04d}-{val_loss:4f}.keras' #history에서 때오는 것임
-filepath = "".join([path, "k39_", date, filename])
+filepath = "".join([path, "k31_", date, filename])
 # 파일명 예
 # "./_save/keras30/" + "k30_", 0914_1147, 에포수-val_loss의 소수 4번째자리까지.keras
 mcp = ModelCheckpoint ( 

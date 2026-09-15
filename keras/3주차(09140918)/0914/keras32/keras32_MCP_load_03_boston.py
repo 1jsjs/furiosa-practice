@@ -9,7 +9,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, Ro
 import numpy as np
 import time
 
-path = "./_save/keras33_boston/"
+path = "./_save/keras31_boston/"
 
 
 #1.데이터
@@ -30,7 +30,7 @@ x_test = scaler.transform (x_test)
 
 
 #2.모델구성
-model = load_model(path +"k33_0914_13590058-7.759359.keras") #모델체크포인트 파일에서 만들어놓은 모델 불러오기 모델구조 ~~ 모든 게 저장되어 있음
+model = load_model(path +"k31_0914_13590058-7.759359.keras") #모델체크포인트 파일에서 만들어놓은 모델 불러오기 모델구조 ~~ 모든 게 저장되어 있음
 
 #3.컴파일, 훈련
 # model.compile(loss = 'mse', optimizer = 'adam')
@@ -45,9 +45,9 @@ model = load_model(path +"k33_0914_13590058-7.759359.keras") #모델체크포인
 # date = datetime.datetime.now()
 # date = date.strftime("%m%d_%H%M")
 
-# path = "./_save/keras33_boston/"
+# path = "./_save/keras31_boston/"
 # filename = '{epoch:04d}-{val_loss:4f}.keras' #history에서 때오는 것임
-# filepath = "".join([path, "k33_", date, filename])
+# filepath = "".join([path, "k31_", date, filename])
 # mcp = ModelCheckpoint ( 
 #     monitor='val_loss',
 #     mode='auto',

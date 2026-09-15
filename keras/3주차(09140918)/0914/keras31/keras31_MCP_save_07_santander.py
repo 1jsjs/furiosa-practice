@@ -12,7 +12,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
 #원핫 때려주고 np유니 확인 한번 해주시고 모델에서는 마지막 softmax 평가예측할땐 categorical~ 마지막np.round > np.argmax
 
 
-savepath = "./_save/keras41/"
+savepath = "./_save/keras31/"
 
 #1. 데이터
 path = "./_data/kaggle_santander/"
@@ -89,7 +89,7 @@ date = datetime.datetime.now()
 date = date.strftime("%m%d_%H%M")
 
 filename = '{epoch:04d}-{val_loss:4f}.keras' #history에서 때오는 것임
-filepath = "".join([savepath, "k41_", date, filename])
+filepath = "".join([savepath, "k31_", date, filename])
 # 파일명 예
 # "./_save/keras30/" + "k30_", 0914_1147, 에포수-val_loss의 소수 4번째자리까지.keras
 mcp = ModelCheckpoint ( 

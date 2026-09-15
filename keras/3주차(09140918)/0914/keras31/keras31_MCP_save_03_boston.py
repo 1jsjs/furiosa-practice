@@ -9,7 +9,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, Ro
 import numpy as np
 import time
 
-path = "./_save/keras33_boston/"
+path = "./_save/keras31_boston/"
 
 
 #1.데이터
@@ -54,9 +54,9 @@ import datetime
 date = datetime.datetime.now()
 date = date.strftime("%m%d_%H%M")
 
-path = "./_save/keras33_boston/"
+path = "./_save/keras31_boston/"
 filename = '{epoch:04d}-{val_loss:4f}.keras' #history에서 때오는 것임
-filepath = "".join([path, "k33_", date, filename])
+filepath = "".join([path, "k31_", date, filename])
 mcp = ModelCheckpoint ( 
     monitor='val_loss',
     mode='auto',
@@ -90,7 +90,7 @@ print ("r2 :", r2)
 #사이킷런에서는 원값과 테스트값만 넣으면 된다!
 
 mse = mean_squared_error(y_test, y_predict) #사이킷런의 mse
-print("mse : ", mean_squared_error)
+print("mse : ", mse)
 
 def RMSE (y_test, y_predict): #RMSE 함수 정의
     return np.sqrt(mean_squared_error(y_test, y_predict))
