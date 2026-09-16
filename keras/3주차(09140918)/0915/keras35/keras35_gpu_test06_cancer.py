@@ -96,7 +96,7 @@ es = EarlyStopping (
 )
 start_time = time.time()
 model.fit (x_train, y_train,
-                  epochs = 1000,
+                  epochs = 100,
                   batch_size = 32,
                   validation_split = 0.2,
                   callbacks = [es], #EarlyStopping을 리스트로 받아드림. 
@@ -144,4 +144,16 @@ loss : 0.0798686146736145
 acc :  0.9825
 걸린 시간: 7.03
 acc_score : 0.9824561403508771
+"""
+
+"""
+CPU 쓸때 - MacBook
+loss : 0.050316158682107925
+acc : 0.9708
+걸린 시간: 4.28
+acc_score : 0.9707602339181286
+
+GPU 쓸때 - Google Colab Tesla T4
+실제 코드 출력 결과만 기록
+실행 미완료 - Epoch 55/100 이후 출력 정체, 최종 출력 미확인
 """

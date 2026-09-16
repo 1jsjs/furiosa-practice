@@ -88,7 +88,7 @@ es = EarlyStopping (
     restore_best_weights=True
 )
 start_time=time.time()
-model.fit (x_train, y_train, epochs = 2000, batch_size=4096,
+model.fit (x_train, y_train, epochs = 100, batch_size=4096,
            validation_split=0.1,
            callbacks=[es])
 end_time=time.time()
@@ -108,3 +108,12 @@ print (y_test)
 accuracy_score = accuracy_score(y_test, y_pred)
 print ('acc_score : ', accuracy_score)
 print ('걸린 시간 : ', round(end_time - start_time, 2), 's')
+
+"""
+CPU 쓸때 - MacBook
+측정 결과 없음 - 100 epoch CPU 실행 시간이 길어 측정 중단
+
+GPU 쓸때 - Google Colab Tesla T4
+실제 코드 출력 결과만 기록
+실행하지 못함 - 순차 실행이 06번에서 중단되어 도달하지 못함
+"""

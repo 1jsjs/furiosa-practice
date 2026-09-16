@@ -94,7 +94,7 @@ es = EarlyStopping (
     restore_best_weights=True
 )
 start_time = time.time()
-model.fit (x_train, y_train, epochs = 2000, batch_size=32,
+model.fit (x_train, y_train, epochs = 100, batch_size=32,
            validation_split=0.1,
            callbacks=[es]
            )
@@ -115,3 +115,15 @@ y_test = np.argmax (y_test, axis=1)
 accuracy_score = accuracy_score(y_test, y_pred)
 print ('acc_score : ', accuracy_score)
 print ('걸린 시간 : ', round(end_time - start_time, 2), 's')
+
+"""
+CPU 쓸때 - MacBook
+loss : 0.03838661313056946
+acc : 0.99
+acc_score : 0.9916666666666667
+걸린 시간 : 2.77 s
+
+GPU 쓸때 - Google Colab Tesla T4
+실제 코드 출력 결과만 기록
+실행하지 못함 - 순차 실행이 06번에서 중단되어 도달하지 못함
+"""

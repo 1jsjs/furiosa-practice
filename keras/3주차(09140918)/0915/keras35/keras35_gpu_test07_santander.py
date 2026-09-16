@@ -80,7 +80,7 @@ es = EarlyStopping (
     restore_best_weights=True
 )
 start_time = time.time()
-model.fit (x_train, y_train, epochs = 1000, batch_size = 1000,
+model.fit (x_train, y_train, epochs = 100, batch_size = 1000,
            verbose=1, 
            validation_split=0.2,
            callbacks=[es],
@@ -130,4 +130,14 @@ submission_csv.to_csv(path + 'submit/' + 'MaxAbsScaler_submit_0910_1713.csv')
 # 26.09.10 기준 minmax scaler 적용
 """
 왜 자꾸 0.5가 나오지? csv에 값도 이상함
+"""
+
+"""
+CPU 쓸때 - MacBook
+측정 결과 없음 - Santander 데이터 파일 없음
+
+GPU 쓸때 - Google Colab Tesla T4
+실제 코드 출력 결과만 기록
+실행하지 못함 - 로컬 데이터는 존재하지만 Colab 업로드 셀이 완료되지 않아 실행하지 못함
+필요한 경로: /content/furiosa-practice/_data/kaggle_santander/
 """

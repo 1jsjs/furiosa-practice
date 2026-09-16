@@ -92,78 +92,16 @@ print ("RMSE: ", rmse)
 y_submit = model.predict (test_csv)
 submission_csv['count'] = y_submit
 
-submission_csv.to_csv(path + 'submit/' + 'RobustScaler_ES_val_submit_0911_1649.csv')
+# submission_csv.to_csv(path + 'submit/' + 'RobustScaler_ES_val_submit_0911_1649.csv')
 
 """
-5차 시도
-random_state = 42
-train_size = 0.90
-epoch = 1000
-batch_size = 50
+CPU 쓸때 - MacBook
+r2 : 0.33764219284057617
+MSE: 21923.708984375
+RMSE: 148.0665694354232
 
-r2 :  0.23310333490371704
-MSE:  25383.892578125
-RMSE:  159.32323301428767
-
-1.50930
-
-마지막 y값을 건드려서 값이 더 올라간듯
+GPU 쓸때 - Google Colab Tesla T4
+실제 코드 출력 결과만 기록
+실행하지 못함 - 로컬 데이터는 존재하지만 Colab 업로드 셀이 완료되지 않아 실행하지 못함
+필요한 경로: /content/furiosa-practice/_data/kaggle_bike-sharing-demand/
 """
-
-# 26.09.10 기준 scaler 적용
-"""
-r2 :  -1.0889439582824707
-MSE:  69142.9921875
-RMSE:  262.95055084083776
-"""
-
-# 26.09.11 기준 standard scaler 적용
-"""
-r2 :  0.3290058970451355
-MSE:  22209.56640625
-RMSE:  149.02874355724134
-"""
-
-"""
-# 26.09.11 기준 MaxAbsScaler 적용
-r2 :  0.33581870794296265
-MSE:  21984.06640625
-RMSE:  148.2702478795055
-"""
-
-"""
-# 26.09.11 기준 RobustScaler 적용
-r2 :  0.33581870794296265
-MSE:  21984.06640625
-RMSE:  148.2702478795055
-"""
-
-
-# import matplotlib.pyplot as plt
-
-# print ("==============================================hist=====================================================")
-# print (hist) #지금 hist는 랩핑되어 있는 상태
-# print ("==============================================hist.history=====================================================")
-# print (hist.history) #지금 hist는 랩핑되어 있는 상태, epoch 횟수만큼 저장되어 있음 fit 함수는 loss와 val loss 값을 반환하고 있었다.
-# # ai 할 때는 리스트(두 개 이상은 리스트) 와 딕셔너리(key-value는 딕셔너리) 값을 많이 쓴다.
-# # 이것 가지고 시각화하면 더 이해를 잘 할 수 있게 되겠지?
-# print ("==============================================loss=====================================================")
-# print (hist.history['loss'], 'epochs : ', len(hist.history['loss']))
-# print ("==============================================val_loss=====================================================")
-# print (hist.history['val_loss'])
-
-# print ("==============================================시각화하기=====================================================")
-
-
-# plt.rcParams["font.family"] = "Malgun Gothic"
-# plt.rcParams["axes.unicode_minus"] = False
-
-# plt.figure(figsize=(9,6))
-# plt.plot(hist.history['loss'], c='red', label='loss')
-# plt.plot(hist.history['val_loss'], c='blue', label='val_loss')
-# plt.legend(loc='upper right')
-# plt.xlabel('epoch')
-# plt.title('캐글 자전거 데이터')
-# plt.ylabel('loss')
-# plt.grid()
-# plt.show()

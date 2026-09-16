@@ -86,7 +86,7 @@ model.add(Dense(1))
 
 #3.컴파일, 훈련
 model.compile (loss = 'mse', optimizer = 'adam')
-hist = model.fit (x_train, y_train, epochs =1000, batch_size = 10, validation_split = 0.3)
+hist = model.fit (x_train, y_train, epochs =100, batch_size = 10, validation_split = 0.3)
 
 
 #4.평가, 예측
@@ -145,3 +145,15 @@ submission.to_csv(path + 'submit/' + "RobustScaler_submit_0911_1644.csv")
 # plt.ylabel('loss')
 # plt.grid()
 # plt.show()
+
+"""
+CPU 쓸때 - MacBook
+r2 : 0.5715104965790734
+MSE: 2831.743846102418
+RMSE: 53.214132014930186
+
+GPU 쓸때 - Google Colab Tesla T4
+실제 코드 출력 결과만 기록
+실행하지 못함 - 로컬 데이터는 존재하지만 Colab 업로드 셀이 완료되지 않아 실행하지 못함
+필요한 경로: /content/furiosa-practice/_data/ddarung/
+"""

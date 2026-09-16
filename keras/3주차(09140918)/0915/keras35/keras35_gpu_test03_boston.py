@@ -81,12 +81,13 @@ print("RMSE : ", rmse)
 print ("걸린 시간:", round(end_time-start_time, 2))
 
 """
-GPU 쓸때
-loss(mse) :  30.844005584716797
-r2 : 0.6294740369576164
-mse :  <function mean_squared_error at 0x0000022AABB69FC0>
-RMSE :  5.553738123116107
-걸린 시간: 16.49
+GPU 쓸때 - Google Colab Tesla T4
+실제 코드 출력 결과만 기록
+loss(mse) :  22.640796661376953
+r2 : 0.7280183494233438
+mse :  <function mean_squared_error at 0x7a891092f240>
+RMSE : 4.758234895501521
+걸린 시간: 24.23
 
 CPU 쓸때
 loss(mse) :  22.228376388549805
