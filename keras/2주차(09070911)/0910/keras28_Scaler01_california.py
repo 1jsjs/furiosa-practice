@@ -27,8 +27,8 @@ import time
 #1.데이터
 datasets = fetch_california_housing ()
 x = datasets.data
-
 y = datasets.target
+
 # datasets 을 x와 y로 분리
 print (x.shape, y.shape) #(20640, 8) (20640,)
 
