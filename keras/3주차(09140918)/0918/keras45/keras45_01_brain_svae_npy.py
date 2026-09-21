@@ -1,7 +1,10 @@
 # 44-2 copy
 
 """
-
+loss : 0.000346549553796649
+acc : 1.0
+accuracy score : 1.0
+걸린 시간 : 1553.79 s
 """
 
 import time
