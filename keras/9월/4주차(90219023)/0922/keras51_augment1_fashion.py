@@ -58,7 +58,6 @@ x_augmented = x_augmented.reshape (
 )
 # print (x_augmented.shape) #(40000, 28, 28, 1)
 
-
 xy_augmented = datagen.flow (
                             x_augmented, y_augmented,
                             batch_size = augment_size,

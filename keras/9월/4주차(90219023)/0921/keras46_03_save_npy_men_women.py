@@ -9,15 +9,6 @@ keras47_03_laod_npy_men_women.py (넘파이 데이터 불러와서 훈련 후, �
 
 keras49_02_meManWoman.py (넘파이와 가중치 불러와서 내 사진으로 predict)
 -----------------------------------------------------------------------------------------
-keras44
-이미지로 남녀 모델 학습 + .keras 가중치 저장
-
-keras46
-학습/테스트 이미지를 .npy로 저장
-
-keras49
-.npy로 만든 내 사진 + keras44에서 저장한 .keras 모델을 불러와 predict
------------------------------------------------------------------------------------------
 *keras44
 loss : 0.6501535773277283
 acc : 0.6449999809265137
@@ -34,6 +25,7 @@ saved to: ./_data/men_women_npy/
 
 import time
 import datetime
+import os
 import numpy as np
 import pandas as pd
 
@@ -47,9 +39,15 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 
 
-# keras44와 같은 원본 데이터 폴더
-path_data = "./_data/image/men_women/"
-np_path = "./_data/men_women_npy/"
+# 현재 파일은 C:/study/keras/9월/4주차(90219023)/0921에 있고,
+# 실제 _data 폴더는 C:/study/_data에 있다.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+study_dir = os.path.normpath(os.path.join(
+    current_dir, "..", "..", "..", ".."
+))
+path_data = os.path.join(study_dir, "_data", "image", "men_women")
+np_path = os.path.join(study_dir, "_data", "men_women_npy")
+os.makedirs(np_path, exist_ok=True)
 
 
 # 이미지 크기와 정규화 방식을 keras44와 맞춘다.
@@ -60,26 +58,67 @@ xy_all = datagen.flow_from_directory(
     target_size=(300, 300),
     color_mode="rgb",
     class_mode="categorical",
-    batch_size=2000,
-    shuffle=True,
+    batch_size=32,
+    shuffle=False,
 )
 
-# 현재 데이터가 많으므로 한 번에 2,000장만 메모리에 올린다.
-# keras44도 xy_all[0]으로 같은 방식의 데이터 묶음을 사용했다.
-x, y = xy_all[0]
+# 전체 이미지의 인덱스를 train/test로 분리한다.
+# 이미지 전체를 RAM에 올리지 않고 인덱스만 분리한다.
+total_count = xy_all.samples
+all_indices = np.arange(total_count)
+class_ids = xy_all.classes
 
-x_train, x_test, y_train, y_test = train_test_split(
-    x,
-    y,
+train_idx, test_idx = train_test_split(
+    all_indices,
     train_size=0.9,
     random_state=333,
-    stratify=y,
+    stratify=class_ids,
 )
 
-np.save(np_path + 'keras46_03_x_train.npy', arr=x_train)
-np.save(np_path + 'keras46_03_y_train.npy', arr=y_train)
-np.save(np_path + 'keras46_03_x_test.npy', arr=x_test)
-np.save(np_path + 'keras46_03_y_test.npy', arr=y_test)
+train_position = np.full(total_count, -1, dtype=np.int64)
+test_position = np.full(total_count, -1, dtype=np.int64)
+train_position[train_idx] = np.arange(len(train_idx))
+test_position[test_idx] = np.arange(len(test_idx))
+
+# open_memmap은 배열을 한꺼번에 RAM에 만들지 않고 .npy 파일에 배치로 기록한다.
+x_train = np.lib.format.open_memmap(
+    os.path.join(np_path, "keras46_03_x_train.npy"),
+    mode="w+",
+    dtype="float32",
+    shape=(len(train_idx), 300, 300, 3),
+)
+x_test = np.lib.format.open_memmap(
+    os.path.join(np_path, "keras46_03_x_test.npy"),
+    mode="w+",
+    dtype="float32",
+    shape=(len(test_idx), 300, 300, 3),
+)
+
+# 라벨은 이미지 전체를 만들지 않고 class id에서 바로 원-핫으로 만든다.
+y_all = np.eye(len(xy_all.class_indices), dtype="float32")[class_ids]
+y_train = y_all[train_idx]
+y_test = y_all[test_idx]
+
+for batch_no in range(len(xy_all)):
+    x_batch, _ = xy_all[batch_no]
+    start = batch_no * xy_all.batch_size
+    end = min(start + len(x_batch), total_count)
+    batch_indices = np.arange(start, end)
+
+    train_mask = np.isin(batch_indices, train_idx)
+    test_mask = ~train_mask
+
+    if np.any(train_mask):
+        x_train[train_position[batch_indices[train_mask]]] = x_batch[train_mask]
+
+    if np.any(test_mask):
+        x_test[test_position[batch_indices[test_mask]]] = x_batch[test_mask]
+
+    if (batch_no + 1) % 50 == 0 or batch_no == len(xy_all) - 1:
+        print(f"저장 진행: {end}/{total_count}")
+
+x_train.flush()
+x_test.flush()
 
 print("class_indices:", xy_all.class_indices)
 print("x_train:", x_train.shape, "y_train:", y_train.shape)
