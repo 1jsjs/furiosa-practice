@@ -1,62 +1,48 @@
-"""
-keras44_ImageDataGenerator4_ManWoman.py
-    남녀 얼굴 모델 학습 + 가중치 저장
+# keras49_02_내가남자게여자게.py
 
-keras46_03_save_npy_men_women.py
-    남녀 이미지 데이터를 numpy로 저장
-
-keras49_02_meManWoman.py
-    numpy와 keras44에서 저장한 가중치를 불러와 내 사진 predict
-
-    ============== 내 사진 예측 결과 ==============
-raw prediction : [[0.6416128  0.35843575]]
-like man?   : 0.6416128
-like woman? : 0.35843575
-결과: man 쪽
-"""
 import numpy as np
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+from tensorflow.keras.preprocessing import image
 
-from tensorflow.keras.preprocessing.image import load_img
-from tensorflow.keras.preprocessing.image import img_to_array
-from tensorflow.keras.models import load_model
-from sklearn.metrics import accuracy_score
+#.1 내 사진 이미지 로드 및 전처리
+img_path = './_data/image/내사진.jpg'
+img = image.load_img(img_path, target_size=(64, 64))
+img_array = image.img_to_array(img) / 255.0  
+img_array = np.expand_dims(img_array, axis=0) # (1, 150, 150, 3)으로 차원 확장
 
+# 2. 모델 구조 정의 (2번 파일 keras47_03과 100% 똑같은 구조여야 가중치가 에러 없이 로드됩니다!)
+model = Sequential([
+    Conv2D(32, (3, 3), activation='relu', input_shape=(64, 64, 3)),
+    MaxPooling2D(2, 2),
+    Conv2D(64, (3, 3), activation='relu'),
+    MaxPooling2D(2, 2),
+    Flatten(),
+    Dense(64, activation='relu'),
+    Dropout(0.3),
+    Dense(1, activation='sigmoid') # 이진 분류 출력층
+])
+#  저장해 둔 가중치 불러오기
+model.load_weights('./_save/keras46/manwoman_weights.h5')
+print("--- 가중치 로드 완료 ---")
 
-# keras46에서 저장한 테스트 데이터
-np_path = "./_data/men_women_npy/"
-x_test = np.load(np_path + "keras46_03_x_test.npy")
-y_test = np.load(np_path + "keras46_03_y_test.npy")
+# 4. 내 사진으로 "내가 남자게 여자게" 예측하기
+print("============== 내 사진 예측 ======================")
 
-# keras44에서 저장한 모델 중 val_loss가 가장 낮았던 모델
-path_save = "./_save/keras44_MenWomen/"
-model = load_model(path_save + "k44_0921_14500019-0.650756.keras")
+# 4. 예측 수행
+y_predict = model.predict(img_array)
+print('예측 확률값 (raw):', y_predict[0][0])
 
+# 반올림하여 0 또는 1로 변환
+y_result = np.round(y_predict)
+print('반올림 결과 (0 or 1):', y_result[0][0])
 
-# 테스트 데이터로 모델 성능 확인
-print("============== model.evaluate ================")
-loss = model.evaluate(x_test, y_test, verbose=1)
-print("loss :", loss[0])
-print("acc  :", loss[1])
-
-y_pred = model.predict(x_test, verbose=0)
-y_pred_round = np.round(y_pred)
-print("accuracy score :", round(accuracy_score(y_test, y_pred_round), 2))
-
-
-# 내 사진을 남녀 모델 입력 크기인 300x300 RGB numpy로 변환
-img = load_img("./_data/image/mypic.jpg", target_size=(300, 300))
-x_me = img_to_array(img)
-x_me = x_me.reshape(1, 300, 300, 3)
-x_me = x_me / 255.0
-
-# 내 사진 predict
-print("============== 내 사진 예측 결과 ==============")
-me_pred = model.predict(x_me, verbose=0)
-print("raw prediction :", me_pred)
-print("like man?   :", me_pred[0][0])
-print("like woman? :", me_pred[0][1])
-
-if np.argmax(me_pred[0]) == 0:
-    print("결과: man 쪽")
+# 결과 출력
+if y_result[0][0] == 0:
+    print(f"결과: 남자일 확률이 { (1 - y_predict[0][0]) * 100:.2f}% 입니다. (남자)")
 else:
-    print("결과: woman 쪽")
+    print(f"결과: 여자일 확률이 { y_predict[0][0] * 100:.2f}% 입니다. (여자)")
+
+# # 실행 예시 (본인 사진 파일명 입력)
+# predict_my_gender('./_data/image/내사진.jpg')

@@ -1,149 +1,137 @@
-# https://www.kaggle.com/datasets/tongpython/cat-and-dog/data
-# 44-3 copy
-
-#keras45_03_catdog_save_npy.py
-"""
-loss : 0.6931470036506653
-acc : 0.5002471804618835
-accuracy score : 0.5
-걸린 시간 : 1020.48 s
-"""
-#cat-and-dog
-
-import time
-import datetime
+# 실습 목표0.77
+#배치사이즈 10000
 import numpy as np
-import pandas as pd
-
+import tensorflow as tf
+from sklearn.metrics import accuracy_score
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Conv2D, Flatten, GlobalAveragePooling2D, Dropout, MaxPooling2D, MaxPool2D
+from tensorflow.keras.layers import Conv2D, Dense, Flatten, MaxPooling2D, Dropout
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+import time
 
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.metrics import accuracy_score
-
-# 수치화 + 데이터 증폭 => ImageDataGemerator
-
-path_train = "./_data/image/catdog/training_set"
-path_test = "./_data/image/catdog/test_set"
-path_save = "./_save/keras44_CatDog/"
-
-train_dategen = ImageDataGenerator (
+train_datagen = ImageDataGenerator(
     rescale = 1./255,
-    # horizontal_flip = True, # 수평 뒤집기
-    # vertical_flip = True, # 수직 뒤집기 (상하반전)
-    # width_shift_range = 0.1, # 평행 이동
-    # height_shift_range = 0.1,
-    # rotation_range = 5, # 각도조절(정해진 각도만큼 이미지 회전)
-    # zoom_range = 1.2,
-    # shear_range = 0.7, # 좌표 하나를 고정하고 다른 몇 개의 좌표를 이동 (한마디로 피부...?)
-    # fill_mode='nearest'
+    # horizontal_flip=  True,    
+    # vertical_flip= True,       
+    # width_shift_range= 0.1,     
+    # height_shift_range=0.1,
+    # rotation_range= 5,          
+    # zoom_range= 1.2,
+    # shear_range= 0.7,           
+    # fill_mode='nearest'         
 )
-test_dategen = ImageDataGenerator (
-    rescale = 1./255,
+test_datagen = ImageDataGenerator(
+    rescale=1./255,
 )
 
-xy_train = train_dategen.flow_from_directory (
-    path_train, # 경로
-    target_size = (150, 150),
-    batch_size= 10000, 
-    # IDG 하면  (80,100,100,1), (80,) 이렇게 뭉쳐서 나온다. 배치 사이즈를 10으로 주면 8 * (10, 100, 100, 1) 이런 식으로 나온다.
-    class_mode= 'categorical', # 이진분류라는 얘기
-    color_mode= "rgb", # 컬러
-    shuffle = True
+# path_train = './_data/image/cat_dog/train_set/'
+# path_test = './_data/image/cat_dog/test_set/'
+
+path_train = 'C:/study/_data/image/cat_dog/training_set/'
+path_test = 'C:/study/_data/image/cat_dog/test_set/'
+
+
+xy_train = train_datagen.flow_from_directory(
+    './_data/image/cat_dog/training_set',
+    target_size=(100, 100),
+    batch_size=10000,
+    class_mode='binary', # 개/고양이 이진 분류
+    shuffle=True
 )
-# Found 8005 images belonging to 2 classes.
-xy_test = test_dategen.flow_from_directory (
-    path_test,
-    target_size = (150, 150),
-    batch_size= 10000, 
-    # IDG 하면  (80,100,100,1), (80,) 이렇게 뭉쳐서 나온다. 배치 사이즈를 10으로 주면 8 * (10, 100, 100, 1) 이런 식으로 나온다.
-    class_mode= 'categorical', # 이진분류라는 얘기
-    color_mode= "rgb", # 흑백
-    # shuffle = True # 테스트 데이터는 건들지 않는 것이 원칙이므로 shuffle을 할 필요가 없다.
+
+xy_test = test_datagen.flow_from_directory(
+    './_data/image/cat_dog/test_set',
+    target_size=(100, 100),
+    batch_size=10000,
+    class_mode='binary',
+    shuffle=False
 )
-# Found 2023 images belonging to 2 classes
+
+print(xy_train[0][0])   #첫번째 배치의 x데이터가됨
+print(xy_train[0][1])   #첫번째 배치의 y데이터가됨
 
 x_train = xy_train[0][0]
 y_train = xy_train[0][1]
-
 x_test = xy_test[0][0]
 y_test = xy_test[0][1]
 
-# print (x_train.shape, y_train.shape) #(160, 150, 150, 1) (160,)
-# print (x_test.shape, y_test.shape) #(120, 150, 150, 1) (120,)
+print(x_train.shape, y_train.shape)
+print(x_test.shape, y_test.shape)
+
+np_path = './_data/kaggle_cat_dog_npy/'             #🤎💛🧡 🤎💛🧡
+np.save(np_path + 'keras45_01_x_train_catdog.npy' , arr = xy_train[0][0])  #또는 arr = x_train 도가능 
+np.save(np_path + 'keras45_01_y_train_catdog.npy' , arr = xy_train[0][1])  #🤎💛🧡 🤎💛🧡
+np.save(np_path + 'keras45_01_x_test_catdog.npy' , arr = xy_train[0][0])  #🤎💛🧡 🤎💛🧡
+np.save(np_path + 'keras45_01_y_test_catdog.npy' , arr = xy_train[0][1])  #🤎💛🧡 🤎💛🧡
 
 
-np_path = "./_data/kaggle_cat_dog_npy/"
-np.save(np_path + 'keras45_01_x_train.npy', arr=x_train) # x_train / arr=xy_train[0][0]도 가능
-np.save(np_path + 'keras45_01_y_train.npy', arr=y_train) # y_train
-np.save(np_path + 'keras45_01_x_test.npy', arr=x_test) # x_test
-np.save(np_path + 'keras45_01_y_test.npy', arr=y_test) #y_test
+# 2. 모델 구성 (CNN)
+model = Sequential([
+    Conv2D(32, (3, 3), input_shape=(100, 100, 3), activation='relu'),
+    MaxPooling2D(2, 2),
+    Conv2D(64, (3, 3), activation='relu'),
+    MaxPooling2D(2, 2),
+    Conv2D(124, (3, 3), activation='relu'),
+    MaxPooling2D(2, 2),
+    Flatten(),
+    Dense(64, activation='relu'),
+    Dropout(0.5),
+    Dense(1, activation='sigmoid') # 이진 분류 마감
+])
 
-# 2. 모델 구성
-model = Sequential()
+# 3. 컴파일 및 훈련
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-model.add(Conv2D(64, (3,3), activation="relu", input_shape=(150, 150, 3), padding='same')) 
-model.add(MaxPool2D())
-model.add(Dropout(0.2))
+es = EarlyStopping(monitor='val_loss', patience=20, mode='min',
+                    restore_best_weights=True,
+                    verbose=1, #🤎
+                    )
 
-model.add(Conv2D(128, (3,3), activation='relu', padding='same')) 
-model.add(MaxPool2D())
-model.add(Dropout(0.2))
-
-model.add(Conv2D(256, (3,3), activation='relu', padding='same')) 
-model.add(MaxPool2D())
-model.add(Dropout(0.2))
-
-# 분류기 (Classifier) 부분
-model.add(Flatten())
-model.add(Dense(8, activation='relu'))
-model.add(Dropout(0.3))
-model.add(Dense(8, activation='relu'))
-model.add(Dropout(0.3)) 
-model.add(Dense(2, activation='softmax'))
-
-# 3. 컴파일, 훈련
-model.compile (loss='categorical_crossentropy', optimizer='adam',
-               metrics=['acc'])
-date = datetime.datetime.now()
-date = date.strftime("%m%d_%H%M")
-
-filename = '{epoch:04d}-{val_loss:4f}.keras' #history에서 때오는 것임
-filepath = "".join([path_save, "k45_", date, filename])
-
-mcp = ModelCheckpoint ( 
-    monitor='val_loss',
-    mode='auto',
-    save_best_only = True,
-    filepath =filepath,
-    verbose=1,
-)
-
-es = EarlyStopping (
-    monitor= 'val_loss', #기준을 선언
-    mode= 'min', #어떤 값을 찾을까? 긴가민가 하면 auto 하면 됨
-    patience= 100, #몇 번을 찾을 건인지
-    restore_best_weights=True, #어떤 가중치 값을 반환할건지 default는 False *현재 값 / True는 최솟값
-    verbose = 1, 
-)
-
+# 3.컴파일 훈련
+# generator 데이터셋 구조에 맞는 fit 실행
 start_time = time.time()
-model.fit (x_train, y_train, epochs=5000,
-           batch_size=64, verbose=1, validation_split=0.1, callbacks=[es, mcp])
+
+path = './_save/keras46/'
+filename ='catdog.keras'
+
+
+mcp = ModelCheckpoint(                      
+    monitor='val_loss', 
+    mode='auto', 
+    save_best_only= True, 
+    filepath=  path+ filename,  
+    verbose=1,
+)   
+
+hist = model.fit(
+    x_train,
+    y_train,
+    epochs=100,
+    validation_data=(x_test, y_test),
+    # callbacks=[es],
+    callbacks=[es,mcp],
+    verbose=1, #🤎
+)
 end_time = time.time()
+ # 4. 평가
 
-# 4. 평가, 예측
-print ('==============model.evaluate===================')
-loss = model.evaluate (x_test, y_test, verbose=1)
-print ('loss :', loss[0])
-print ('acc :', loss[1])
 
-y_pred = model.predict (x_test)
+print("==============model.evaluate======================")
+loss = model.evaluate(x_test, y_test, verbose=1)
+print('loss :', loss[0])
+print('loss :', loss[1])
 
-y_pred = np.round(y_pred)
+y_predict = model.predict(x_test)
+y_predict = np.round(y_predict)
 
-acc_score = accuracy_score(y_test, y_pred)
-print ('accuracy score :', round(acc_score, 2))
-print ('걸린 시간 :', round(end_time - start_time, 2), 's')
+acc_score = accuracy_score(y_test, y_predict)
+print('accuracy_score : ', acc_score)
+print('걸린시간 : ', round(end_time-start_time,2), '초')
+
+'''
+accuracy_score :  0.8116658428077114
+걸린시간 :  230.22 초
+
+accuracy_score :  0.8126544735541276
+걸린시간 :  52.2 초
+'''

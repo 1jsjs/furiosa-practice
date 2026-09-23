@@ -1,146 +1,168 @@
-"""기존 men/women npy를 불러와 여성 데이터만 증폭하여 학습한다.
-loss: 1.6884045600891113
-acc : 0.6800000071525574
-"""
+#실습 keras51_augment5_men_women_여자만
+# 여자 데이터를 증폭해서 성능을 올려봐 ! 
 
-import numpy as np
-import time
-import datetime
 
-from tensorflow.keras import Sequential
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-from tensorflow.keras.layers import Conv2D, Dense, Dropout, Flatten, MaxPool2D
+from tensorflow.keras.preprocessing.image import load_img 
+from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import numpy as np
+import matplotlib.pyplot as plt
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
+import pandas as pd
+import time
 from sklearn.metrics import accuracy_score
 
-path_save = "./_save/keras51_MenWomen/"
-# 1. npy 파일 불러오기
-np_path = "./_data/men_women_npy/"
-x_train = np.load (np_path + 'keras46_03_x_train.npy')
-y_train = np.load (np_path + 'keras46_03_y_train.npy')
-x_test = np.load (np_path + 'keras46_03_x_test.npy')
-y_test = np.load (np_path + 'keras46_03_y_test.npy')
+#1. 데이터 
 
-print("원본 x_train:", x_train.shape) #원본 x_train: (1800, 300, 300, 3)
-print("원본 y_train:", y_train.shape) #원본 y_train: (1800, 2)
-print("원본 x_test :", x_test.shape) #원본 x_test : (200, 300, 300, 3)
-print("원본 y_test :", y_test.shape) #원본 y_test : (200, 2)
+x_data = np.load('./_save/keras46/manwoman_x.npy')
+y_data = np.load('./_save/keras46/manwoman_y.npy')
 
+from sklearn.model_selection import train_test_split
 
-# 2. np.where로 여성 데이터만 선택
-# class_indices: {'man': 0, 'woman': 1}
-# y_train의 shape은 (샘플 수, 2)이고 여성 라벨은 [0, 1]이다.
-# 따라서 열 전체가 아니라 여성에 해당하는 두 번째 열만 확인한다.
-women_idx = np.where(y_train[:, 1] > 0.0)[0]
-
-x_train_woman = x_train[women_idx].copy()
-y_train_woman = y_train[women_idx].copy()
-
-print("여성 데이터 개수:", len(women_idx))
-print("x_train_woman:", x_train_woman.shape)
-print("y_train_woman:", y_train_woman.shape)
-
-# 3. 여성 데이터만 증폭
-augment_size = 1000
-
-# 여성 데이터 안에서만 랜덤 선택한다.
-randidx = np.random.randint(
-    x_train_woman.shape[0],
-    size=augment_size,
+x_train, x_test, y_train, y_test = train_test_split(
+    x_data,
+    y_data,
+    test_size=0.2,
+    random_state=42,
+    stratify=y_data
 )
 
-x_augmented = x_train_woman[randidx].copy()
-y_augmented = y_train_woman[randidx].copy()
+################# 요기부터 증폭이닷 ####################
+# [★해결] 차원 붕괴를 막기 위해 y_train 뒤에 .flatten()만 추가해주면 완벽하게 해결
+x_train_women = x_train[np.where(y_train.flatten() > 0.0)]
+y_train_women = y_train[np.where(y_train.flatten() > 0.0)]
 
-"""
-x_train_woman = x_train[np.where(y_train > 0.0)]
-y_train_woman = y_train[np.where(y_train > 0.0)]
+print(x_train_women.shape, y_train_women.shape)
+print(np.unique(y_train_women, return_counts=True))
 
-print (x_train_woman.shaoe, y_train_woman.shape)
-print (np.unique(y_train_woman, return_counts = True))
-"""
 
-# npy의 x 데이터는 이미 0~1이므로 rescale을 넣지 않는다.
-datagen = ImageDataGenerator(
-    rotation_range=15,
-    width_shift_range=0.1,
-    height_shift_range=0.1,
-    zoom_range=0.2,
-    horizontal_flip=True,
-    fill_mode="nearest",
+train_datagen = ImageDataGenerator(
+    # rescale = 1./255, 
+    horizontal_flip=True,       # 수평 뒤집기 (좌우반전)
+    width_shift_range=0.1,      # 평행이동
+    rotation_range=15,          # 각도조절
+    fill_mode='nearest'         
 )
 
-augmented_generator = datagen.flow(
-    x_augmented,
-    y_augmented,
-    batch_size=augment_size,
-    shuffle=False,
-)
-x_augmented, y_augmented = next(augmented_generator)
+augment_size = 40000
 
-x_train = np.concatenate((x_train, x_augmented), axis=0)
-y_train = np.concatenate((y_train, y_augmented), axis=0)
+# 추출된 여자 데이터 전체 개수(x_train_women.shape[0]) 중에서 40,000개를 랜덤
+print("원본 여자 데이터 개수:", x_train_women.shape[0])
+randidx = np.random.randint(x_train_women.shape[0], size=augment_size)  
+print(randidx.shape)
+print(len(randidx)) 
 
-print("증폭 후 x_train:", x_train.shape)
-print("증폭 후 y_train:", y_train.shape)
+print(np.min(randidx), np.max(randidx))
+
+# 위에서 정의한 x_train_women에서 랜덤 인덱스 분할
+x_augmented = x_train_women[randidx].copy()
+y_augmented = y_train_women[randidx].copy()
+
+# 데이터 모양 확인: 정상적으로 (40000, 64, 64, 3)으로 추출됨을 확인
+print(x_augmented.shape, y_augmented.shape) 
+
+# [★해결] 이미 (40000, 64, 64, 3)으로 정상 형태이므로, 
+# 50-2 원본 카피의 형식을 맞추기 위해 자기 자신의 차원 크기를 그대로 대입
+x_augmented = x_augmented.reshape(
+    x_augmented.shape[0],
+    x_augmented.shape[1],
+    x_augmented.shape[2],3)
+
+print(x_augmented.shape)    
+
+# datagen.flow를 통해 여자 데이터만 증폭 수행
+x_augmented = train_datagen.flow(
+                    x_augmented, y_augmented,
+                    batch_size=augment_size,
+                    shuffle=False
+).next()[0]
+##변환완료##
+print(x_augmented.shape)    
+
+print(x_train.shape)
+x_train = x_train.reshape(-1, 64, 64, 3)
+x_test = x_test.reshape(-1, 64, 64, 3)
+
+# 원래 전체 데이터에 증폭 완료된 여자 데이터를 결합
+x_train = np.concatenate((x_train, x_augmented))
+y_train = np.concatenate((y_train, y_augmented.reshape(-1,))) # 차원 맞추기용 리셰이프 포함
+print(x_train.shape, y_train.shape)
+
+print(np.unique(y_train, return_counts=True))
+
+# 1. 데이터 확인 및 스케일링
+print(x_train.shape, y_train.shape) 
+print(x_test.shape, y_test.shape)   
+print(np.max(x_train), np.min(x_train))  
+print(np.max(x_test), np.min(x_test))    
+
+##### 스케일링 1 >>>>>>>>>>> 0~255 → 0~1 변경 ###########
+x_train = x_train / 255.  
+x_test = x_test / 255.
+print(np.max(x_train), np.min(x_train)) 
+print(np.max(x_test), np.min(x_test))   
+
+x_train = x_train.reshape(-1, 64, 64, 3)
+x_test = x_test.reshape(-1, 64, 64, 3)
+print(x_train.shape, x_test.shape)  
+
+y_train = y_train.reshape(-1, 1)
+y_test = y_test.reshape(-1, 1)
+
+print(y_train.shape, y_test.shape)
 
 
-# 4. 모델 구성
-model = Sequential()
-model.add(Conv2D(128, (3, 3), activation="relu", input_shape=(300, 300, 3), padding="same"))
-model.add(MaxPool2D())
-model.add(Dropout(0.2))
-model.add(Conv2D(128, (3, 3), activation="relu", padding="same"))
-model.add(MaxPool2D())
-model.add(Dropout(0.2))
-model.add(Conv2D(128, (3, 3), activation="relu", padding="same"))
-model.add(MaxPool2D())
-model.add(Dropout(0.2))
-model.add(Flatten())
-model.add(Dense(128, activation="relu"))
-model.add(Dropout(0.3))
-model.add(Dense(128, activation="relu"))
-model.add(Dropout(0.3))
-model.add(Dense(2, activation="softmax"))
-
-model.compile(
-    loss="categorical_crossentropy",
-    optimizer="adam",
-    metrics=["accuracy"],
-)
+# 2. 모델 구성
+model = Sequential([
+    Conv2D(32, (3, 3), activation='relu', input_shape=(64, 64, 3)),
+    MaxPooling2D(2, 2),
+    Conv2D(64, (3, 3), activation='relu'),
+    MaxPooling2D(2, 2),
+    Flatten(),
+    Dense(64, activation='relu'),
+    Dropout(0.3),
+    Dense(1, activation='sigmoid') # 이진 분류 출력층
+])
 model.summary()
 
+# 3. 컴파일 훈련 
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])   
 
-# 5. 학습
-date = datetime.datetime.now().strftime("%m%d_%H%M")
-filepath = path_save + "k51_" + date + "-{epoch:04d}-{val_loss:.6f}.keras"
-
-
-mcp = ModelCheckpoint(filepath, monitor="val_loss", mode="min", save_best_only=True, verbose=1)
-es = EarlyStopping(monitor="val_loss", mode="min", patience=30, restore_best_weights=True, verbose=1)
+from tensorflow.keras.callbacks import EarlyStopping
+es = EarlyStopping(
+    monitor='val_loss',
+    mode='min',
+    patience=30,
+    restore_best_weights=True,
+)
 
 start_time = time.time()
-model.fit(
-    x_train,
-    y_train,
-    epochs=1000,
-    batch_size=4,
-    validation_split=0.1,
-    callbacks=[es, mcp],
-    verbose=1,
-)
+model.fit(x_train, y_train, epochs=500, batch_size=128,
+          verbose=1, 
+          validation_split=0.2,
+          callbacks=[es])
 end_time = time.time()
 
 
-# 6. 평가
-print("============== model.evaluate ==============")
-loss, acc = model.evaluate(x_test, y_test, verbose=1, callbacks = [es, mcp])
-print("loss:", loss)
-print("acc :", acc)
+# 4. 평가예측
+print("==============model.evaluate======================")
+loss = model.evaluate(x_test, y_test, verbose=1)
+print('loss :', loss[0])
+print('acc :', loss[1])
 
-y_pred = model.predict(x_test, verbose=0)
-y_pred_class = np.argmax(y_pred, axis=1)
-y_test_class = np.argmax(y_test, axis=1)
-print("accuracy score:", round(accuracy_score(y_test_class, y_pred_class), 2))
-print("걸린 시간:", round(end_time - start_time, 2), "s")
+y_predict = model.predict(x_test)
+y_predict = np.round(y_predict)
 
+acc_score = accuracy_score(y_test, y_predict)
+
+print('accuracy_score : ', acc_score)
+print('걸린시간 : ', round(end_time - start_time, 2), '초')
+
+'''
+accuracy_score :  0.51
+걸린시간 :  132.45 초
+
+accuracy_score :  0.8426573426573427
+걸린시간 :  336.94 초
+'''

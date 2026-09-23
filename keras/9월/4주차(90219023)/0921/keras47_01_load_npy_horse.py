@@ -1,55 +1,75 @@
 
-# acc 1.0 만들기
-"""
-* save
-loss : 0.013718152418732643
-acc : 0.9951456189155579
-accuracy score : 1.0
-걸린 시간 : 181.22 s
-
-*load
-loss : 0.013718152418732643
-acc : 0.9951456189155579
-accuracy score : 1.0
-"""
-import time
-import datetime
 import numpy as np
-import pandas as pd
-
-from keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import Dense, Conv2D, Flatten, GlobalAveragePooling2D, Dropout, MaxPooling2D, MaxPool2D
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-
-
-from sklearn.preprocessing import OneHotEncoder
+import tensorflow as tf
 from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, Dense, Flatten, MaxPooling2D, Dropout
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+import time
 
-# 1. 데이터 경로 설정 (horse-human 최상위 폴더 지정)
-# ImageDataGenerator는 지정된 경로 아래의 하위 폴더(horses, humans)를 각각 클래스로 인식
-path_data = "./_data/image/horse-human/"
-path_save = "./_save/keras46_horses/"
+#1.데이터
 
-np_path = "./_data/horse_npy/"
-x_train = np.load (np_path + 'keras46_01_x_train.npy')
-y_train = np.load (np_path + 'keras46_01_y_train.npy')
-x_test = np.load (np_path + 'keras46_01_x_test.npy')
-y_test = np.load (np_path + 'keras46_01_y_test.npy')
+np_path = './_save/keras46/'
+x_train = np.load(np_path + 'keras46_01_x_train_horse-human.npy')
+y_train = np.load(np_path + 'keras46_01_y_train_horse-human.npy')
+x_test = np.load(np_path + 'keras46_01_x_test_horse-human.npy')
+y_test = np.load(np_path + 'keras46_01_y_test_horse-human.npy')
 
-# 2. 모델 구성 + # 3. 컴파일, 훈련
-model = load_model(path_save +"k46_0921_10380047-0.002192.keras") #모델체크포인트 파일에서 만들어놓은 모델 불러오기 모델구조 ~~ 모든 게 저장되어 있음
 
-# 4. 평가, 예측
-print ('==============model.evaluate===================')
-loss = model.evaluate (x_test, y_test, verbose=1)
-print ('loss :', loss[0])
-print ('acc :', loss[1])
+# 2. 모델 구성 (CNN)
+model = Sequential([
+    Conv2D(32, (3, 3), input_shape=(100, 100, 3), activation='relu'),
+    MaxPooling2D(2, 2),
+    Conv2D(64, (3, 3), activation='relu'),
+    MaxPooling2D(2, 2),
+    Conv2D(124, (3, 3), activation='relu'),
+    MaxPooling2D(2, 2),
+    Flatten(),
+    Dense(64, activation='relu'),
+    Dropout(0.5),
+    Dense(2, activation='softmax')
+])
 
-y_pred = model.predict (x_test)
+# 3. 컴파일 및 훈련
+model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-y_pred = np.round(y_pred)
+es = EarlyStopping(monitor='val_loss', patience=100, mode='min',
+                    restore_best_weights=True,
+                    verbose=1, #🤎
+                    )
 
-acc_score = accuracy_score(y_test, y_pred)
-print ('accuracy score :', round(acc_score, 2))
+# 3.컴파일 훈련
+# generator 데이터셋 구조에 맞는 fit 실행
+start_time = time.time()
+hist = model.fit(
+    x_train,
+    y_train,
+    epochs=100,
+    validation_data=(x_test, y_test),
+    callbacks=[es],
+    verbose=1, #🤎
+)
+end_time = time.time()
+ # 4. 평가
+
+
+print("==============model.evaluate======================")
+loss = model.evaluate(x_test, y_test, verbose=1)
+print('loss :', loss[0])
+print('loss :', loss[1])
+
+y_predict = model.predict(x_test)
+y_predict = np.argmax(y_predict, axis=1)
+
+acc_score = accuracy_score(y_test, y_predict)
+print('accuracy_score : ', acc_score)
+print('걸린시간 : ', round(end_time-start_time,2), '초')
+
+'''
+accuracy_score :  0.8116658428077114
+걸린시간 :  230.22 초
+
+accuracy_score :  0.8126544735541276
+걸린시간 :  52.2 초
+'''
