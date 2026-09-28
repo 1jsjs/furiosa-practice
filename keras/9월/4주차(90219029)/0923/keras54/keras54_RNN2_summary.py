@@ -53,5 +53,5 @@ model.summary()
 =================================================================
 Total params: 85
 Trainable params: 85
-Non-trainable params: 0
+Non-trainable params: 0 전이학습에서 
 """
