@@ -10,7 +10,6 @@ accuracy score : 0.6829
 1,2, 추가
 
 """
-
 import time
 import numpy as np
 import pandas as pd

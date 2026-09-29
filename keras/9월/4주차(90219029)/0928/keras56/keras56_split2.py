@@ -20,7 +20,7 @@ def split (dataset, size):
     xs = []
     ys = []
     for i in range(0,len(dataset) - size):
-        # x = dataset [:, :-1]
+        # x = dataset [:, :-1, :]
         # y = dataset [:, -1, -1] = [:, -1, 1]
         x = dataset[i:i+size]
         y = dataset[i+size]
