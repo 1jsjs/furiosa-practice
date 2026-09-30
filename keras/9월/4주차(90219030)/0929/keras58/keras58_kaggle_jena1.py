@@ -5,6 +5,22 @@
 # 2017.01.01 00:00:00깓지 데이터 144개 (훈련에 쓰지 않음)
 # 훈련 데이터에는 12월 31일 데이터는 들어가면 안 된다. (뒤에서부터 144개 자르기)
 # 144개가 1일 
+
+#0930 수정 : y를 T (degC) 로
+"""
+k58_0930_1510_0078-0.0348.keras
+R2: 0.5515135638792179
+MSE: 4.8863121985150855
+RMSE:  2.2105004407407582
+걸린 시간 :  1412.15 s
+
+k58_0930_1535_0122-0.0343.keras
+R2: 0.6775548099357175
+MSE: 3.5130780747609993
+RMSE:  1.8743206968822061
+걸린 시간 :  1061.14 s
+"""
+#====================================================
 """
 k58_0929_1706_0003-0.5495.keras
 R2: -0.12322989753173386
@@ -41,10 +57,10 @@ np_path = './_data/jena_npy/'
 
 datasets = pd.read_csv(data_path + 'jena_climate_2009_2016.csv', index_col=0)
 
-y_cor = datasets[-144:]['wd (deg)'] #예측치 정답 데이터
+y_cor = datasets[-144:]["T (degC)"] #예측치 정답 데이터
 
-x_data = datasets[:-288].drop(['wd (deg)'], axis=1)
-y_data = datasets[144:-144]['wd (deg)']
+x_data = datasets[:-288].drop("T (degC)", axis=1)
+y_data = datasets[144:-144]["T (degC)"]
 """
 y_cor에 예측 정답 144개를 따로 보관하고, 학습용 x_data와 y_data는 144행 차이를 두는 구성
 이 CSV에서는 y_cor가 말씀한 대로 2016-12-31 00:10부터 2017-01-01 00:00까지의 행을 잡음
@@ -83,6 +99,8 @@ model = Sequential()
 model.add(LSTM(32, input_shape=(144, 13), return_sequences=True))
 model.add(Dropout(0.2))
 model.add(LSTM(16))
+
+model.add(Flatten())
 model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.2))
 model.add(Dense(144))     
@@ -125,7 +143,10 @@ model.fit(x, y, epochs=5000, batch_size=2000, shuffle=False, verbose=1, validati
 end_time = time.time()
 
 # 4. 평가
-x_predict = datasets[-288:-144].drop(['wd (deg)'], axis=1).to_numpy()
+def RMSE (y_val, y_predict):
+    return np.sqrt(mean_squared_error(y_val, y_predict))
+
+x_predict = datasets[-288:-144].drop(["T (degC)"], axis=1).to_numpy()
 x_predict = x_scaler.transform(x_predict).astype(np.float32)
 x_predict = x_predict.reshape(1, 144, 13)
 
@@ -140,8 +161,12 @@ y_predict = y_scaler.inverse_transform(
     y_predict_scaled.reshape(-1, 1)
 )[:, 0]  # (144,)
 
+
+rmse = RMSE(y_cor.to_numpy(), y_predict)
+
 print('12월 31일 실제값:', y_cor.to_numpy())
 print('12월 31일 예측값:', y_predict)
 print('R2:', r2_score(y_cor.to_numpy(), y_predict))
 print('MSE:', mean_squared_error(y_cor.to_numpy(), y_predict))
+print ("RMSE: ", rmse)
 print ('걸린 시간 : ', round(end_time - start_time, 2), 's')
