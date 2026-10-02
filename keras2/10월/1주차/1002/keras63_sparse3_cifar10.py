@@ -1,32 +1,33 @@
+#53-13 copy
 # 실습 acc 0.67이상
 """
-epochs=100, batch_size=128, verbose=1, validation_split=0.1
-loss : 3.7106895446777344
-acc : 0.12800000607967377
-accuracy score : 0.128
-걸린 시간 : 542.4 s
+# optimizer - learning_rate = 0.003
+loss : 1.2362111806869507
+acc : 0.571399986743927
+accuracy score : 0.5714
+걸린 시간 : 513.24 s
 
-epochs=100, batch_size=256, verbose=1, validation_split=0.1
-loss : 3.7265281677246094
-acc : 0.09300000220537186
-accuracy score : 0.093
-걸린 시간 : 779.3 s
+#sparse_categorical_crossentropy
+loss : 1.1998209953308105
+acc : 0.5672000050544739
+accuracy score : 0.1273
+걸린 시간 : 534.39 s
 """
 
 import time
-import datetime
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from keras.datasets import cifar100
+from keras.datasets import cifar10
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Conv2D, Dropout, Flatten
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
+from tensorflow.keras.layers import Dense, Conv2D, Dropout, Flatten, GlobalAveragePooling2D
 
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import OneHotEncoder
 
-(x_train, y_train), (x_test, y_test) = cifar100.load_data()
+(x_train, y_train), (x_test, y_test) = cifar10.load_data()
 # print (x_train.shape, y_train.shape) #(50000, 32, 32, 3) (50000, 1)
 # print (x_test.shape, y_test.shape) #(10000, 32, 32, 3) (10000, 1)
 # print (np.max(x_train), np.min(x_train)) #255 0
@@ -39,18 +40,9 @@ from sklearn.metrics import accuracy_score
 ############## 이미지에서 한정, -1 ~ +1 로 한다. -> 이미지 쪽 전처리는 이렇게 많이 한다.
 x_train = (x_train - 127.5) / 127.5
 x_test = (x_test - 127.5) / 127.5
-print (x_train.shape, x_test.shape) #(50000, 32, 32, 3) (10000, 32, 32, 3)
-print (x_train.shape, x_test.shape) #(50000, 32, 32, 3) (10000, 32, 32, 3)
-print(x_train.min(), x_train.max()) #-1.0 1.0
-
-# OneHot
-ohe = OneHotEncoder(sparse_output=False)
-y_train = y_train.reshape(-1, 1)
-y_train = ohe.fit_transform(y_train) 
-y_test = y_test.reshape(-1,1)
-y_test = ohe.fit_transform(y_test)
-# print (y_train.shape, y_test.shape) #(50000, 100) (10000, 100)
-
+# print (x_train.shape, x_test.shape) #(50000, 32, 32, 3) (10000, 32, 32, 3)
+# print (x_train.shape, x_test.shape) #(50000, 32, 32, 3) (10000, 32, 32, 3)
+# print(x_train.min(), x_train.max()) #-1.0 1.0
 
 ######## 2. 모델구성
 model = Sequential()
@@ -65,25 +57,53 @@ model.add(Dropout(0.2))
 model.add(Conv2D(filters=32, kernel_size=(2,2), activation='relu')) # 24,24,32
 model.add(Conv2D(filters=32, kernel_size=(2,2), activation='relu')) # 23,23,32
 model.add(Dropout(0.2))
-model.add(Conv2D(filters=64, kernel_size=(2,2), activation='relu')) # 24,24,32
-model.add(Dropout(0.2))
-model.add(Conv2D(filters=64, kernel_size=(3,3), activation='relu')) # 24,24,32
-model.add(Dropout(0.2))
-model.add(Conv2D(filters=64, kernel_size=(5,5), activation='relu')) # 24,24,32
-model.add(Flatten())
+# model.add(Flatten())
+model.add(GlobalAveragePooling2D())
 model.add(Dense(units=32, activation='relu'))
 model.add(Dropout(0.2))
 model.add(Dense(units=16, activation='relu'))
 model.add(Dense(units=8, activation='relu'))
 model.add(Dropout(0.2))
 model.add(Dense(units=8, activation='relu'))
-model.add(Dense(100, activation='softmax')) #원하는 shape상태는 (10,)이다.
+model.add(Dense(10, activation='softmax')) #원하는 shape상태는 (10,)이다.
 
+# model.summary()
 # 3. 컴파일, 훈련
-model.compile (loss='categorical_crossentropy', optimizer='adam',
+from tensorflow.keras.optimizers import Adam
+learning_rate = 0.003
+
+model.compile (loss='sparse_categorical_crossentropy', optimizer=Adam(learning_rate=learning_rate),
                metrics=['acc'])
+es = EarlyStopping (
+    monitor='val_loss',
+    mode='auto',
+    patience=20,
+    restore_best_weights=True
+)
+
+import datetime
+date = datetime.datetime.now()
+date = date.strftime("%m%d_%H%M")
+
+path_save= "./_save/keras63_ReduceLR13_cifar10/"
+filename = '{epoch:04d}-{val_loss:4f}.keras' #history에서 때오는 것임
+filepath = "".join([path_save, "k63_", date, filename])
+mcp = ModelCheckpoint ( 
+    monitor='val_loss',
+    mode='auto',
+    save_best_only = True,
+    filepath =filepath,
+    verbose=1,
+)
+
+rlr = ReduceLROnPlateau (
+    monitor = 'val_loss',
+    mode='auto',
+    patience=10,
+    factor=0.5,
+)
 start_time = time.time()
-model.fit (x_train, y_train, epochs=100, batch_size=256, verbose=1, validation_split=0.1)
+model.fit (x_train, y_train, epochs=100, batch_size=256, verbose=1, validation_split=0.1, callbacks=[es,mcp,rlr])
 end_time = time.time()
 
 # 4. 평가, 예측
