@@ -39,3 +39,4 @@ tensorboard_logs/
 *.h5
 *.keras
 *.pdf
+/.gradio/
